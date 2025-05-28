@@ -74,7 +74,7 @@ const A2: React.FC = () => {
 
   const handleUpdate = () => {
     if (editingUser) {
-      fetch(`http://localhost:5000/api/users/update`, {
+      fetch(`http://localhost:5000/api/update`, {
         method: 'POST', // hoặc PUT tùy API bạn thiết kế
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(editingUser),
