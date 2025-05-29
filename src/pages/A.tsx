@@ -1,28 +1,74 @@
-import React from 'react';
+// src/components/A.tsx
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../styles/A.css';
 
 const A: React.FC = () => {
+  const [email, setEmail] = useState('');
+  const [matKhau, setMatKhau] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+
+    try {
+      const response = await fetch('http://localhost:5000/api/user/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          mat_khau: matKhau,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Sai email hoặc mật khẩu');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('user', JSON.stringify(data)); // lưu thông tin user nếu cần dùng sau
+      navigate('/A1'); // chuyển trang nếu thành công
+    } catch (err: any) {
+      setError(err.message || 'Lỗi đăng nhập');
+    }
+  };
+
   return (
     <div className="a-container">
       <header className="a-header">
-        <h1>Welcome to LendCo Home Page</h1>
-        <p>Your gateway to smooth document management</p>
+        <h1>Đăng nhập LendCo</h1>
+        <p>Nhập thông tin để tiếp tục</p>
       </header>
 
-      <section className="a-features">
-        <div className="feature-card">
-          <h3>Fast Access</h3>
-          <p>Quickly find and manage your documents with ease.</p>
+      <form className="a-login-form" onSubmit={handleLogin}>
+        {error && <p className="error-text">{error}</p>}
+
+        <div className="form-group">
+          <label>Email:</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
         </div>
-        <div className="feature-card">
-          <h3>Secure Storage</h3>
-          <p>Your data is safe with our top-notch security protocols.</p>
+
+        <div className="form-group">
+          <label>Mật khẩu:</label>
+          <input
+            type="password"
+            value={matKhau}
+            onChange={(e) => setMatKhau(e.target.value)}
+            required
+          />
         </div>
-        <div className="feature-card">
-          <h3>User Friendly</h3>
-          <p>Intuitive design for seamless user experience.</p>
-        </div>
-      </section>
+
+        <button type="submit" className="login-button">Đăng nhập</button>
+      </form>
     </div>
   );
 };
