@@ -18,7 +18,7 @@ interface VanBan {
   ykienchidao: string | null;
 }
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 8;
 
 const A2: React.FC = () => {
   const [data, setData] = useState<VanBan[]>([]);
