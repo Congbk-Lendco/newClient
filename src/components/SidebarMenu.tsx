@@ -1,6 +1,7 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/SidebarMenu.css';
+import UserInfo from './UserInfo';
 
 type SubMenu = {
   id: string;
@@ -17,10 +18,10 @@ type Menu = {
 const menus: Menu[] = [
   {
     id: 'A',
-    label: 'A',
+    label: 'Hồ sơ văn bản',
     subMenus: [
-      { id: 'A1', label: 'A1', path: '/A1' },
-      { id: 'A2', label: 'A2', path: '/A2' },
+      { id: 'A1', label: 'Hồ Sơ', path: '/A1' },
+      { id: 'A2', label: 'Văn Bản', path: '/A2' },
       { id: 'A3', label: 'A3', path: '/A3' }
     ]
   },
@@ -43,11 +44,8 @@ const menus: Menu[] = [
 
 const SidebarMenu: React.FC = () => {
   const [activeMenu, setActiveMenu] = useState<string | null>(null);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
-  // Ghi nhớ user để tránh parse lại mỗi lần render
   const user = useMemo(() => {
     return JSON.parse(localStorage.getItem('user') || '{}');
   }, []);
@@ -60,20 +58,11 @@ const SidebarMenu: React.FC = () => {
     navigate(path);
   };
 
-  const handleLogout = () => {
+  // Memo hóa handleLogout để tránh render lại UserInfo không cần thiết
+  const handleLogout = useCallback(() => {
     localStorage.removeItem('user');
     navigate('/');
-  };
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  }, [navigate]);
 
   return (
     <div className="sidebar">
@@ -104,33 +93,8 @@ const SidebarMenu: React.FC = () => {
           </li>
         ))}
       </ul>
-          
-      {/* User info - chỉ hiện 1 lần ở cuối sidebar */}
-      <div
-        className="user-info"
-        ref={dropdownRef}
-        onClick={() => setShowDropdown(prev => !prev)}
-      >
-        <img
-          src={user.avatar || '/avatars/default.png'}
-          alt="avatar"
-          className="user-avatar"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = '/avatars/default.png';
-          }}
-        />
-        <div className="user-details">
-          <strong>{user.tenNhanVien || 'Không rõ'}</strong>
-          <span>{user.tenChiNhanh || ''}</span>
-        </div>
 
-        {showDropdown && (
-          <div className="user-dropdown">
-            <button onClick={(e) => { e.stopPropagation(); alert('Cài đặt chưa triển khai'); }}>⚙ Cài đặt</button>
-            <button onClick={(e) => { e.stopPropagation(); handleLogout(); }}>🚪 Thoát</button>
-          </div>
-        )}
-      </div>
+      <UserInfo user={user} onLogout={handleLogout} />
     </div>
   );
 };

@@ -84,7 +84,12 @@ const A2: React.FC = () => {
 
   return (
     <div className="a2-container">
-      <h2>Danh sách Văn bản</h2>
+     <h2 className="vanban-heading">
+  <span className="vanban-icon">📄</span>
+  Danh sách văn bản
+</h2>
+
+
 
       <div className="filters">
         <input
