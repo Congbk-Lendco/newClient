@@ -130,9 +130,19 @@ const A2: React.FC = () => {
             onChange={e => setDateTo(e.target.value)}
           />
         </div>
+
+        {/* Nút thêm văn bản ngay cạnh filter ngày */}
+        <button
+          className="btn-add-vanban"
+          onClick={() => {
+            // Bạn có thể xử lý mở modal hoặc chuyển trang ở đây
+            alert("Nút Thêm Văn bản được nhấn!");
+          }}
+        >
+          + Thêm Văn bản
+        </button>
       </div>
 
-      {/* Phần bảng bạn muốn giữ nguyên hoặc tự xử lý */}
       <table className="vanban-table">
         <thead>
           <tr>
