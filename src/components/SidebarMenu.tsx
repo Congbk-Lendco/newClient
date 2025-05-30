@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/SidebarMenu.css';
 
@@ -15,9 +15,30 @@ type Menu = {
 };
 
 const menus: Menu[] = [
-  { id: 'A', label: 'A', subMenus: [{ id: 'A1', label: 'A1', path: '/A1' }, { id: 'A2', label: 'A2', path: '/A2' }, { id: 'A3', label: 'A3', path: '/A3' }] },
-  { id: 'B', label: 'B', subMenus: [{ id: 'B1', label: 'B1', path: '/B1' }, { id: 'B2', label: 'B2', path: '/B2' }] },
-  { id: 'C', label: 'C', subMenus: [{ id: 'C1', label: 'C1', path: '/C1' }] },
+  {
+    id: 'A',
+    label: 'A',
+    subMenus: [
+      { id: 'A1', label: 'A1', path: '/A1' },
+      { id: 'A2', label: 'A2', path: '/A2' },
+      { id: 'A3', label: 'A3', path: '/A3' }
+    ]
+  },
+  {
+    id: 'B',
+    label: 'B',
+    subMenus: [
+      { id: 'B1', label: 'B1', path: '/B1' },
+      { id: 'B2', label: 'B2', path: '/B2' }
+    ]
+  },
+  {
+    id: 'C',
+    label: 'C',
+    subMenus: [
+      { id: 'C1', label: 'C1', path: '/C1' }
+    ]
+  }
 ];
 
 const SidebarMenu: React.FC = () => {
@@ -25,7 +46,11 @@ const SidebarMenu: React.FC = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || '{}');
+
+  // Ghi nhớ user để tránh parse lại mỗi lần render
+  const user = useMemo(() => {
+    return JSON.parse(localStorage.getItem('user') || '{}');
+  }, []);
 
   const handleMenuClick = (menuId: string) => {
     setActiveMenu(prev => (prev === menuId ? null : menuId));
@@ -79,12 +104,24 @@ const SidebarMenu: React.FC = () => {
           </li>
         ))}
       </ul>
-
-      <div className="user-info" ref={dropdownRef} onClick={() => setShowDropdown(prev => !prev)}>
-        <img src={user.avatar} alt="avatar" className="user-avatar" />
+          
+      {/* User info - chỉ hiện 1 lần ở cuối sidebar */}
+      <div
+        className="user-info"
+        ref={dropdownRef}
+        onClick={() => setShowDropdown(prev => !prev)}
+      >
+        <img
+          src={user.avatar || '/avatars/default.png'}
+          alt="avatar"
+          className="user-avatar"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = '/avatars/default.png';
+          }}
+        />
         <div className="user-details">
-          <strong>{user.tenNhanVien}</strong>
-          <span>{user.tenChiNhanh}</span>
+          <strong>{user.tenNhanVien || 'Không rõ'}</strong>
+          <span>{user.tenChiNhanh || ''}</span>
         </div>
 
         {showDropdown && (
