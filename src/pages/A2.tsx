@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/A2.css";
 import FilterDropdown from "./FilterDropdown";
+import VanBanChiTiet from "./vanbanchitiet"; // <-- import component chi tiết
 
 interface VanBan {
   id_vanban: string;
@@ -30,6 +31,8 @@ const A2: React.FC = () => {
   const [filterDonViPhoiHop, setFilterDonViPhoiHop] = useState<string>("");
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
+
+  const [selectedIdVanBan, setSelectedIdVanBan] = useState<string | null>(null); // <-- Thêm state lưu id vanban được chọn
 
   useEffect(() => {
     fetch("http://localhost:5000/api/nv/vanban")
@@ -84,12 +87,10 @@ const A2: React.FC = () => {
 
   return (
     <div className="a2-container">
-     <h2 className="vanban-heading">
-  <span className="vanban-icon">📄</span>
-  Danh sách văn bản
-</h2>
-
-
+      <h2 className="vanban-heading">
+        <span className="vanban-icon">📄</span>
+        Danh sách văn bản
+      </h2>
 
       <div className="filters">
         <input
@@ -136,11 +137,9 @@ const A2: React.FC = () => {
           />
         </div>
 
-        {/* Nút thêm văn bản ngay cạnh filter ngày */}
         <button
           className="btn-add-vanban"
           onClick={() => {
-            // Bạn có thể xử lý mở modal hoặc chuyển trang ở đây
             alert("Nút Thêm Văn bản được nhấn!");
           }}
         >
@@ -162,15 +161,18 @@ const A2: React.FC = () => {
             <th>Kết quả</th>
             <th>Đơn vị chủ trì</th>
             <th>Đơn vị phối hợp</th>
-            {/* <th>Người tạo</th> */}
             <th>Ý kiến chỉ đạo</th>
+            <th>Chi tiết</th> {/* Thêm cột nút chi tiết */}
           </tr>
         </thead>
         <tbody>
           {pagedData.length === 0 ? (
-            <tr><td colSpan={13} style={{ textAlign: "center" }}>Không có dữ liệu</td></tr>
+            <tr><td colSpan={14} style={{ textAlign: "center" }}>Không có dữ liệu</td></tr>
           ) : pagedData.map((vb, index) => (
-            <tr key={vb.id_vanban}>
+            <tr
+              key={vb.id_vanban}
+              className={selectedIdVanBan === vb.id_vanban ? "selected-row" : ""}
+            >
               <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
               <td>{vb.soVB}</td>
               <td>{vb.ngayVB ? new Date(vb.ngayVB).toLocaleDateString() : ""}</td>
@@ -182,8 +184,15 @@ const A2: React.FC = () => {
               <td>{vb.ketqua}</td>
               <td>{vb.donvichutri}</td>
               <td>{vb.donviphoihop}</td>
-              {/* <td>{vb.nguoi_tao_id}</td> */}
               <td>{vb.ykienchidao}</td>
+              <td>
+                <button
+                  onClick={() => setSelectedIdVanBan(vb.id_vanban)}
+                  className="btn-detail"
+                >
+                  Chi tiết
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -203,6 +212,11 @@ const A2: React.FC = () => {
         >
           Next
         </button>
+      </div>
+
+      {/* Hiển thị component chi tiết ở đây */}
+      <div style={{ marginTop: "2rem" }}>
+        <VanBanChiTiet idVanBan={selectedIdVanBan} />
       </div>
     </div>
   );

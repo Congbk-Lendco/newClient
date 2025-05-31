@@ -1,0 +1,74 @@
+.vanban-detail {
+  border: 1px solid #ddd;
+  padding: 16px;
+  margin-top: 20px;
+  background: #f9f9f9;
+  border-radius: 6px;
+  position: relative;
+}
+
+.vanban-detail h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.detail-group {
+  margin-bottom: 12px;
+}
+
+.detail-group label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.vanban-detail ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.comment-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-item {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: #fff;
+  padding: 8px;
+  border-radius: 4px;
+  align-items: flex-start;
+}
+
+.comment-item .avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ccc;
+}
+
+.comment-content strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.comment-content small {
+  color: #666;
+  font-size: 0.8rem;
+}
+.close-btn {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  color: #888;
+}
+.close-btn:hover {
+  color: #000;
+}
