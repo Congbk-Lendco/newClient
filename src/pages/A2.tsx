@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "../styles/A2.css";
 import FilterDropdown from "./FilterDropdown";
-import VanBanChiTiet from "./vanbanchitiet"; // <-- import component chi tiết
+import VanBanChiTiet from "./vanbanchitiet";
 
 interface VanBan {
   id_vanban: string;
@@ -32,15 +32,14 @@ const A2: React.FC = () => {
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
 
-  const [selectedIdVanBan, setSelectedIdVanBan] = useState<string | null>(null); // <-- Thêm state lưu id vanban được chọn
+  // Lưu id văn bản được chọn để hiển thị chi tiết
+  const [selectedIdVanBan, setSelectedIdVanBan] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("http://localhost:5000/api/nv/vanban")
       .then(res => res.json())
       .then(data => setData(data))
-      .catch(err => {
-        console.error("Lỗi fetch:", err);
-      });
+      .catch(err => console.error("Lỗi fetch:", err));
   }, []);
 
   useEffect(() => {
@@ -139,9 +138,7 @@ const A2: React.FC = () => {
 
         <button
           className="btn-add-vanban"
-          onClick={() => {
-            alert("Nút Thêm Văn bản được nhấn!");
-          }}
+          onClick={() => alert("Nút Thêm Văn bản được nhấn!")}
         >
           + Thêm Văn bản
         </button>
@@ -162,62 +159,73 @@ const A2: React.FC = () => {
             <th>Đơn vị chủ trì</th>
             <th>Đơn vị phối hợp</th>
             <th>Ý kiến chỉ đạo</th>
-            <th>Chi tiết</th> {/* Thêm cột nút chi tiết */}
+            <th>Chi tiết</th>
           </tr>
         </thead>
         <tbody>
           {pagedData.length === 0 ? (
-            <tr><td colSpan={14} style={{ textAlign: "center" }}>Không có dữ liệu</td></tr>
-          ) : pagedData.map((vb, index) => (
-            <tr
-              key={vb.id_vanban}
-              className={selectedIdVanBan === vb.id_vanban ? "selected-row" : ""}
-            >
-              <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
-              <td>{vb.soVB}</td>
-              <td>{vb.ngayVB ? new Date(vb.ngayVB).toLocaleDateString() : ""}</td>
-              <td>{vb.noiphathanh}</td>
-              <td>{vb.noidung}</td>
-              <td>{vb.ngaynhanVB ? new Date(vb.ngaynhanVB).toLocaleDateString() : ""}</td>
-              <td>{vb.ngaygiaoviec ? new Date(vb.ngaygiaoviec).toLocaleDateString() : ""}</td>
-              <td>{vb.ngaydukienhoanthanh ? new Date(vb.ngaydukienhoanthanh).toLocaleDateString() : ""}</td>
-              <td>{vb.ketqua}</td>
-              <td>{vb.donvichutri}</td>
-              <td>{vb.donviphoihop}</td>
-              <td>{vb.ykienchidao}</td>
-              <td>
-                <button
-                  onClick={() => setSelectedIdVanBan(vb.id_vanban)}
-                  className="btn-detail"
-                >
-                  Chi tiết
-                </button>
+            <tr>
+              <td colSpan={14} style={{ textAlign: "center" }}>
+                Không có dữ liệu
               </td>
             </tr>
-          ))}
+          ) : (
+            pagedData.map((vb, index) => (
+              <tr
+                key={vb.id_vanban}
+                className={selectedIdVanBan === vb.id_vanban ? "selected-row" : ""}
+              >
+                <td>{(page - 1) * PAGE_SIZE + index + 1}</td>
+                <td>{vb.soVB}</td>
+                <td>{vb.ngayVB ? new Date(vb.ngayVB).toLocaleDateString() : ""}</td>
+                <td>{vb.noiphathanh}</td>
+                <td>{vb.noidung}</td>
+                <td>{vb.ngaynhanVB ? new Date(vb.ngaynhanVB).toLocaleDateString() : ""}</td>
+                <td>{vb.ngaygiaoviec ? new Date(vb.ngaygiaoviec).toLocaleDateString() : ""}</td>
+                <td>{vb.ngaydukienhoanthanh ? new Date(vb.ngaydukienhoanthanh).toLocaleDateString() : ""}</td>
+                <td>{vb.ketqua}</td>
+                <td>{vb.donvichutri}</td>
+                <td>{vb.donviphoihop}</td>
+                <td>{vb.ykienchidao}</td>
+                <td>
+                  <button
+                    onClick={() =>
+                      setSelectedIdVanBan(selectedIdVanBan === vb.id_vanban ? null : vb.id_vanban)
+                    }
+                    className="btn-detail"
+                  >
+                    Chi tiết
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
 
       <div className="pagination">
-        <button
-          disabled={page <= 1}
-          onClick={() => setPage(p => Math.max(1, p - 1))}
-        >
+        <button disabled={page <= 1} onClick={() => setPage(p => Math.max(1, p - 1))}>
           Prev
         </button>
-        <span>Trang {page} / {totalPages}</span>
-        <button
-          disabled={page >= totalPages}
-          onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-        >
+        <span>
+          Trang {page} / {totalPages}
+        </span>
+        <button disabled={page >= totalPages} onClick={() => setPage(p => Math.min(totalPages, p + 1))}>
           Next
         </button>
       </div>
 
-      {/* Hiển thị component chi tiết ở đây */}
+      {/* Hiển thị chi tiết văn bản bên dưới bảng */}
+     
+
+      {/* Hiển thị chi tiết văn bản bên dưới bảng */}
       <div style={{ marginTop: "2rem" }}>
-        <VanBanChiTiet idVanBan={selectedIdVanBan} />
+        <VanBanChiTiet
+          idVanBan={selectedIdVanBan}
+          onClose={() => setSelectedIdVanBan(null)}
+        />
       </div>
+
     </div>
   );
 };

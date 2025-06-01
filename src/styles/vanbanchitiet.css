@@ -1,35 +1,132 @@
+.vanban-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  z-index: 999;
+  cursor: pointer;
+}
+
+.vanban-content {
+  display: flex;
+  gap: 30px;
+  margin-top: 30px;
+  height: 600px; /* hoặc min-height theo yêu cầu */
+}
+
+.comment-section {
+  flex: 1;
+  overflow-y: auto;
+  border-right: 2px solid #eee;
+  padding-right: 20px;
+}
+
+.file-preview {
+  flex: 2;
+  height: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fafafa;
+}
+
+.file-preview iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
 .vanban-detail {
-  border: 1px solid #ddd;
-  padding: 16px;
-  margin-top: 20px;
-  background: #f9f9f9;
-  border-radius: 6px;
-  position: relative;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 10px;
+  max-width: 1500px;
+  width: 95vw;
+  min-height: 80vh;
+  max-height: 98vh;
+
+  overflow-y: auto;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  z-index: 1000;
+  font-size: 16px;
+  color: #222;
+}
+
+.vanban-detail h2 {
+  margin-top: 0;
+  margin-bottom: 25px;
+  border-bottom: 3px solid #0078d7;
+  padding-bottom: 10px;
+}
+
+.vanban-detail table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.vanban-detail table td {
+  padding: 10px 15px;
+  vertical-align: middle;
+  /* căn giữa dọc */
+}
+
+.vanban-detail table td:first-child {
+  font-weight: 600;
+  width: 180px;
+  vertical-align: middle;
 }
 
 .vanban-detail h3 {
-  margin-top: 0;
-  margin-bottom: 10px;
-}
-
-.detail-group {
-  margin-bottom: 12px;
-}
-
-.detail-group label {
+  margin-bottom: 15px;
   font-weight: 600;
-  display: block;
-  margin-bottom: 4px;
 }
 
 .vanban-detail ul {
   padding-left: 20px;
-  margin: 0;
+  margin: 0 0 30px 0;
+  font-size: 15px;
+}
+
+.vanban-detail ul li {
+  margin-bottom: 8px;
+}
+
+.vanban-detail a {
+  color: #0078d7;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* Phần hiển thị avatar và tên người tạo */
+.creator-cell {
+  color: #901bdd;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 5px;
+}
+
+.creator-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #ccc;
+  flex-shrink: 0;
 }
 
 .comment-list {
   list-style: none;
   padding: 0;
+  max-height: 250px;
+  overflow-y: auto;
 }
 
 .comment-item {
@@ -40,14 +137,16 @@
   padding: 8px;
   border-radius: 4px;
   align-items: flex-start;
+  box-shadow: 0 0 5px rgb(0 0 0 / 0.1);
 }
 
-.comment-item .avatar {
+.avatar {
   width: 40px;
   height: 40px;
   border-radius: 50%;
   object-fit: cover;
   background: #ccc;
+  flex-shrink: 0;
 }
 
 .comment-content strong {
@@ -57,18 +156,37 @@
 
 .comment-content small {
   color: #666;
-  font-size: 0.8rem;
+  font-size: 13px;
 }
+
 .close-btn {
   position: absolute;
-  right: 12px;
-  top: 12px;
+  top: 15px;
+  right: 15px;
   border: none;
   background: transparent;
-  font-size: 18px;
+  font-size: 28px;
+  font-weight: bold;
   cursor: pointer;
+  line-height: 1;
   color: #888;
+  transition: color 0.2s ease;
 }
+
 .close-btn:hover {
   color: #000;
+}
+
+/* Centered text for loading/error modal */
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  padding: 25px 35px;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.4);
+  z-index: 1000;
+  font-size: 18px;
 }

@@ -1,4 +1,3 @@
-// src/routes/AppRouter.tsx
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Log from '../pages/login';
@@ -21,9 +20,8 @@ const AppRouter: React.FC = () => {
       <Route path="/B1" element={<B1 />} />
       <Route path="/B2" element={<B2 />} />
       <Route path="/C1" element={<C1 />} />
-      <Route path="*" element={<Navigate to="/" />} /> {/* Chuyển hướng trang không tồn tại về login */}
+      <Route path="*" element={<Navigate to="/" />} />
     </Routes>
-
   );
 };
 
