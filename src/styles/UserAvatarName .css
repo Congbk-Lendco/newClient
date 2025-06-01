@@ -1,0 +1,22 @@
+.user-avatar-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.user-avatar-name .avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ccc;
+}
+
+.user-avatar-name.placeholder {
+  background-color: #aaa;
+}
+
+.creator-avatar .avatar {
+  width: 40px;
+  height: 40px;
+}

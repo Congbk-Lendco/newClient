@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
+import UserAvatarName from "./UserAvatarName"; // import component mới
 import "../styles/vanbanchitiet.css";
 
 interface VanBanChiTietProps {
   idVanBan: string | null;
-  onClose: () => void; // Prop đóng modal
+  onClose: () => void;
 }
+
 
 interface FileVanBanDto {
   fileId: string;
@@ -36,6 +38,12 @@ interface VanBanDetaiList {
   commentList: CommentDto[];
 }
 
+// Hàm chuyển đường dẫn server thành URL truy cập web
+function toWebUrl(path: string | null | undefined): string | undefined {
+  if (!path) return undefined;
+  return path.replace(/\\/g, "/").replace(/^wwwroot\//i, "/");
+}
+
 const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
   const [detail, setDetail] = useState<VanBanDetaiList | null>(null);
   const [loading, setLoading] = useState(false);
@@ -47,7 +55,6 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
       setError(null);
       return;
     }
-
     setLoading(true);
     setError(null);
 
@@ -115,38 +122,59 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
               <td>Ngày văn bản</td>
               <td>{new Date(detail.ngayVB).toLocaleDateString()}</td>
             </tr>
-            {/* Phần hiển thị người tạo ngay dưới ngày văn bản */}
+            {/* Dùng component UserAvatarName thay thế */}
             <tr>
               <td>Người tạo</td>
               <td className="creator-cell">
-                {detail.avatarNguoiTao ? (
-                  <img
-                    src={detail.avatarNguoiTao}
-                    alt={`${detail.tenNguoiTao} avatar`}
-                    className="avatar creator-avatar"
-                  />
-                ) : (
-                  <div className="avatar creator-avatar" />
-                )}
-                <span>{detail.tenNguoiTao || "Không xác định"}</span>
+                <UserAvatarName
+                  avatar={toWebUrl(detail.avatarNguoiTao)}
+                  name={detail.tenNguoiTao}
+                  className="creator-avatar"
+                />
               </td>
             </tr>
           </tbody>
         </table>
-
         <div className="vanban-content">
           <div className="file-preview">
             <h3>Xem file đính kèm</h3>
             {detail.fileVanBanList.length === 0 ? (
               <p>Không có file đính kèm</p>
             ) : (
-              <iframe
-                src={detail.fileVanBanList[0].duongDan}
-                title="Xem file"
-                width="100%"
-                height="100%"
-                frameBorder="0"
-              ></iframe>
+              (() => {
+                const file = detail.fileVanBanList[0];
+                const url = toWebUrl(file.duongDan);
+                if (!url) return <p>File không hợp lệ</p>;
+
+                if (file.loaiFile === "pdf") {
+                  return (
+                    <iframe
+                      src={url}
+                      title="Xem file PDF"
+                      width="100%"
+                      height="600px"
+                      frameBorder="0"
+                    ></iframe>
+                  );
+                } else if (
+                  file.loaiFile.startsWith("image") ||
+                  /\.(jpg|jpeg|png|gif)$/i.test(file.tenFile)
+                ) {
+                  return (
+                    <img
+                      src={url}
+                      alt={file.tenFile}
+                      style={{ maxWidth: "100%", maxHeight: "600px" }}
+                    />
+                  );
+                } else {
+                  return (
+                    <a href={url} target="_blank" rel="noopener noreferrer">
+                      Tải file: {file.tenFile}
+                    </a>
+                  );
+                }
+              })()
             )}
           </div>
 
@@ -156,17 +184,8 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
               {detail.commentList.length === 0 && <li>Không có bình luận</li>}
               {detail.commentList.map((cmt) => (
                 <li key={cmt.idComment} className="comment-item">
-                  {cmt.avatarNguoiDung ? (
-                    <img
-                      src={cmt.avatarNguoiDung}
-                      alt={`${cmt.tenNguoiDung} avatar`}
-                      className="avatar"
-                    />
-                  ) : (
-                    <div className="avatar" />
-                  )}
+                  <UserAvatarName avatar={toWebUrl(cmt.avatarNguoiDung)} name={cmt.tenNguoiDung} />
                   <div className="comment-content">
-                    <strong>{cmt.tenNguoiDung}</strong>
                     <div>{cmt.noiDung}</div>
                     <small>{new Date(cmt.ngayTao).toLocaleString()}</small>
                   </div>

@@ -5,7 +5,33 @@ const UserInfo: React.FC<{
   onLogout: () => void;
 }> = ({ user, onLogout }) => {
   const [showDropdown, setShowDropdown] = useState(false);
-  const [imgSrc, setImgSrc] = useState(user.avatar || "/avatars/default.png"); // giữ src trong state
+
+  // Chuyển đường dẫn avatar local thành URL đầy đủ
+  const formatAvatarUrl = (avatar: string) => {
+    if (!avatar) return "/avatars/default.png";
+
+    // Thay \ thành / cho chuẩn URL
+    const normalizedPath = avatar.replace(/\\/g, "/");
+
+    // Nếu đã là URL http(s) thì trả về nguyên
+    if (normalizedPath.startsWith("http://") || normalizedPath.startsWith("https://")) {
+      return normalizedPath;
+    }
+
+    // Nếu bắt đầu bằng "wwwroot", loại bỏ "wwwroot" và thêm địa chỉ server
+    if (normalizedPath.startsWith("wwwroot/")) {
+      // Giả sử server chạy localhost:5000, bạn đổi theo thực tế
+      return "http://localhost:5000/" + normalizedPath.substring(7);
+    }
+
+    // Trường hợp khác thì trả về avatar như cũ
+    return normalizedPath;
+  };
+
+  const [imgSrc, setImgSrc] = useState(formatAvatarUrl(user.avatar));
+
+  console.log("User avatar:", user.avatar);
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -18,9 +44,9 @@ const UserInfo: React.FC<{
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Nếu user.avatar thay đổi (ví dụ khi user được cập nhật), cập nhật lại imgSrc
+  // Nếu user.avatar thay đổi, cập nhật lại imgSrc đã format
   useEffect(() => {
-    setImgSrc(user.avatar || "/avatars/default.png");
+    setImgSrc(formatAvatarUrl(user.avatar));
   }, [user.avatar]);
 
   return (
@@ -33,7 +59,7 @@ const UserInfo: React.FC<{
         src={imgSrc}
         alt="avatar"
         className="user-avatar"
-        onError={() => setImgSrc("/avatars/default.png")} // fallback chỉ set state 1 lần, tránh vòng lặp
+        onError={() => setImgSrc("/avatars/default.png")}
       />
       <div className="user-details">
         <strong>{user.tenNhanVien || "Không rõ"}</strong>
