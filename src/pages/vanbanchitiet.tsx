@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import UserAvatarName from "./UserAvatarName"; // import component mới
+import type { KeyboardEvent } from "react";
+import UserAvatarName from "./UserAvatarName";
 import "../styles/vanbanchitiet.css";
 
 interface VanBanChiTietProps {
   idVanBan: string | null;
   onClose: () => void;
 }
-
 
 interface FileVanBanDto {
   fileId: string;
@@ -48,7 +48,13 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
   const [detail, setDetail] = useState<VanBanDetaiList | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [commentInput, setCommentInput] = useState("");
 
+  // Giả sử lấy nguoiDungId từ localStorage hoặc nơi lưu thông tin user đăng nhập
+  // Nếu bạn có context hoặc redux thì lấy ở đó nhé
+  const nguoiDungId = localStorage.getItem("nguoiDungId") || "ff5d9e18-f2d2-4b3e-a648-1d288b349fc3";
+
+  // Load chi tiết văn bản
   useEffect(() => {
     if (!idVanBan) {
       setDetail(null);
@@ -75,7 +81,56 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
       .finally(() => setLoading(false));
   }, [idVanBan]);
 
+  // Gửi bình luận mới
+  // ...
+
+  const handleSendComment = () => {
+    if (!commentInput.trim() || !idVanBan || !nguoiDungId) return;
+
+    const newComment = {
+      VanBanId: idVanBan,       // Đổi tên từ IdVanBan thành VanBanId
+      NoiDung: commentInput.trim(),
+      NguoiDungId: nguoiDungId,
+      ReplyTo: null,
+    };
+
+    fetch("http://localhost:5000/api/nv/add-comment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(newComment),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Lỗi khi gửi bình luận");
+        return res.json();
+      })
+      .then(() => {
+        setCommentInput("");
+        // Reload lại chi tiết để lấy comment mới
+        setLoading(true);
+        fetch("http://localhost:5000/api/nv/vanban/details", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ IdVanBan: idVanBan }),
+        })
+          .then((res) => res.json())
+          .then((data) => setDetail(data))
+          .finally(() => setLoading(false));
+      })
+      .catch((err) => alert(err.message));
+  };
+
+  // ...
+
+  // Bắt phím Enter để gửi comment
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      handleSendComment();
+    }
+  };
+
   if (!idVanBan) return null;
+
   if (loading)
     return (
       <>
@@ -83,6 +138,7 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
         <div className="vanban-detail centered">Đang tải chi tiết...</div>
       </>
     );
+
   if (error)
     return (
       <>
@@ -95,6 +151,7 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
         </div>
       </>
     );
+
   if (!detail) return null;
 
   return (
@@ -122,7 +179,6 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
               <td>Ngày văn bản</td>
               <td>{new Date(detail.ngayVB).toLocaleDateString()}</td>
             </tr>
-            {/* Dùng component UserAvatarName thay thế */}
             <tr>
               <td>Người tạo</td>
               <td className="creator-cell">
@@ -135,6 +191,7 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
             </tr>
           </tbody>
         </table>
+
         <div className="vanban-content">
           <div className="file-preview">
             <h3>Xem file đính kèm</h3>
@@ -184,7 +241,10 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
               {detail.commentList.length === 0 && <li>Không có bình luận</li>}
               {detail.commentList.map((cmt) => (
                 <li key={cmt.idComment} className="comment-item">
-                  <UserAvatarName avatar={toWebUrl(cmt.avatarNguoiDung)} name={cmt.tenNguoiDung} />
+                  <UserAvatarName
+                    avatar={toWebUrl(cmt.avatarNguoiDung)}
+                    name={cmt.tenNguoiDung}
+                  />
                   <div className="comment-content">
                     <div>{cmt.noiDung}</div>
                     <small>{new Date(cmt.ngayTao).toLocaleString()}</small>
@@ -192,6 +252,21 @@ const VanBanChiTiet: React.FC<VanBanChiTietProps> = ({ idVanBan, onClose }) => {
                 </li>
               ))}
             </ul>
+
+            {/* Input bình luận */}
+            <div className="comment-input-wrapper">
+              <input
+                type="text"
+                value={commentInput}
+                onChange={(e) => setCommentInput(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Viết bình luận..."
+                className="comment-input"
+              />
+              <button onClick={handleSendComment} className="send-comment-btn">
+                Gửi
+              </button>
+            </div>
           </div>
         </div>
       </div>

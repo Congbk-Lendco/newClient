@@ -44,18 +44,54 @@
   left: 50%;
   transform: translate(-50%, -50%);
   background: #fff;
-  padding: 40px 50px;
+  padding: 30px 40px;
   border-radius: 10px;
-  max-width: 1500px;
-  width: 95vw;
-  min-height: 80vh;
-  max-height: 98vh;
+  max-width: 900px;      /* giảm từ 1500px xuống */
+  width: 90vw;           /* giảm từ 95vw */
+  min-height: 90vh;      /* giảm từ 80vh */
+  max-height: 85vh;      /* giảm từ 90vh */
 
   overflow-y: auto;
   box-shadow: 0 6px 18px rgba(0,0,0,0.4);
   z-index: 1000;
   font-size: 16px;
   color: #222;
+}
+
+.comment-input-wrapper {
+  margin-top: 15px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.comment-input {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.comment-input:focus {
+  border-color: #007bff;
+}
+
+.send-comment-btn {
+  padding: 10px 16px;
+  font-size: 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.send-comment-btn:hover {
+  background-color: #0056b3;
 }
 
 .vanban-detail h2 {
